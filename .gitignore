@@ -1,4 +1,6 @@
 raw_data/
+.python-version
+.DS_Store
 
 
 # VSCode
