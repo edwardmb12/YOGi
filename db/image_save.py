@@ -8,9 +8,9 @@ with open('db/url.csv') as images:
     for row in reader:
         try:
             url = row[2]
-            filename = 'Yogic_sleep_pose/{}'.format(num)
-            if not os.path.exists('images'):
-                os.makedirs('images')
+            filename = 'Plow_Pose_or_Halasana_/{}.jpg'.format(num)
+            if not os.path.exists('Plow_Pose_or_Halasana_'):
+                os.makedirs('Plow_Pose_or_Halasana_')
             print('Saving', url, 'to', filename)
             urllib.request.urlretrieve(url, filename)
             num += 1
