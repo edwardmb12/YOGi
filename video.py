@@ -35,4 +35,3 @@ def extract_and_plot(img):
             count +=1
     cv2.imshow(img)
     cv2.waitKey(100)
-    return data
