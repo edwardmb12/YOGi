@@ -1,7 +1,8 @@
 raw_data/
 .python-version
 .DS_Store
-
+saved_models/
+*:Zone-Identifier
 
 # VSCode
 .vscode/*
