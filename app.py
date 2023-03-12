@@ -1,68 +1,72 @@
 import streamlit as st
+import base64    #pip install pybase64
+import streamlit.components.v1 as components
+from PIL import Image
 
-from streamlit_webrtc import (
-    VideoProcessorBase,
-    webrtc_streamer,
-    VideoHTMLAttributes)
-from video import extract_and_plot
-import threading
+st.set_page_config(
+    page_title="Yogi",
+    page_icon="ॐ",
+)
 
+page_bg_img =  """
+    <style>
 
-#Defining the variables
-lock = threading.Lock()
-img_container = {"frames":[]}
+    [data-testid="stSidebarNav"] {
+        background: url("https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/sacred-geometry-contemporary-art-metatrons-cube-dean-marston.jpg");
+        background-size: cover;
+        background-position: top left;
+        background-repeat: no-repeat;
+    }
+    [data-testid="stSidebar"] {
+        background: url("https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/sacred-geometry-contemporary-art-metatrons-cube-dean-marston.jpg");
+        background-size: cover;
+        background-position: top left;
+        background-repeat: no-repeat;
+    }
+    [data-testid="stAppViewContainer"] {
+        background-position:center;
+        background: url("http://www.mikesastrophotos.com/wp-content/uploads/2013/01/v4-heart-nebula-sm.jpg");
+        background-size: cover;
+        background-position: top left;
+        background-repeat: no-repeat;
+    }
+    [data-testid="stHeader"] {
+        background-colour:rgba(0,0,0,0);
+        colour: white;
+        opacity: 0.1
 
-#Extracting frames from the video input
-class VideoProcessor(VideoProcessorBase):
-    def __init__(self):
-        self.style = 'color'
+    }
+    [data-testid="stToolbar"] {
+        right: 2rem
+    }
+    </style>
+"""
+# [data-testid="stSidebarNav"] {
+#     background: url("https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/sacred-geometry-contemporary-art-metatrons-cube-dean-marston.jpg")
+#     }
+#
+st.markdown(page_bg_img, unsafe_allow_html=True)
 
-    def video_frame_callback(self):
-        img = self.to_ndarray(format="bgr24")
-        img = extract_and_plot(img)
-        with lock:
-            if img is not None:
-                img_container["frames"].append(img)
-def main():
-    st.set_page_config(page_title="YOGi", page_icon="💼", layout="centered")
+original_title = '<p style="font-family:Courier; color:white; font-size: 40px;">Yoga Pose Detection</p>'
+st.markdown(original_title, unsafe_allow_html=True)
 
-    #Title, text, page setup
+st.title("")
+st.sidebar.success("Select a page above.")
 
-    st.markdown(f"<b style=text-align:left;>Video Camera goes here!</b>", unsafe_allow_html=True)
-    playing = st.checkbox("Start/Stop", value=False)
-    analysing=False
+# with open('style.css') as f:
+#     st.markdown(f'<style>{f.read()}</style>',unsafe_allow_html=True)
 
-    #Recording the video
-    if playing:
-        st.session_state["photo_frames"]=[]
-        webrtc_streamer(
-            key="object-detection",
-            video_frame_callback=VideoProcessor.video_frame_callback,
-            media_stream_constraints={ "video": True},
-            desired_playing_state=playing #link to Start/Stop button
-             #, in_recorder_factory=recorder_factory
-            , video_html_attrs = VideoHTMLAttributes(muted=True, volume=0, autoPlay=True, controls=False, stop=False #unabling the user to control video input
-                                                    #,style={"border": "5px red solid", "margin": "0 auto", "width":"50%"}
-                                                    )
-             , rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-                            }
-        )
+# # col1, col2 = st.columns(2)
+# # col1.metric("Column1")
+# # col1.metric("Column2")
 
-    #Storing photo frames
-    if 'photo_frames' not in st.session_state:
-        st.session_state['photo_frames'] = img_container["frames"]
-    else:
-        if len(st.session_state['photo_frames']) < 1:
-            st.session_state['photo_frames'] = img_container["frames"]
-
-
-    #When the video input is done
-    if not playing:
-        #Extracting the frames
-        full_frames=st.session_state["photo_frames"]
-
-
-
-
-if __name__ == "__main__":
-    main()
+# components.html(
+#     """
+#     <head>
+#     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+#     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+#     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+#     </head>
+#     <i class="fa-solid fa-om"></i>
+#     """,
+# )
