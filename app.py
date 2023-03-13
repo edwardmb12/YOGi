@@ -5,7 +5,7 @@ from PIL import Image
 
 st.set_page_config(
     page_title="Yogi",
-    page_icon="ॐ",
+    page_icon="🧘‍♂️",
 )
 
 page_bg_img =  """
@@ -47,7 +47,7 @@ page_bg_img =  """
 #
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-original_title = '<p style="font-family:Courier; color:white; font-size: 40px;">Yoga Pose Detection</p>'
+original_title = '<p style="font-family:Courier; color:white; font-size: 40px;">ॐ Yoga Pose Detection ॐ</p>'
 st.markdown(original_title, unsafe_allow_html=True)
 
 st.title("")
