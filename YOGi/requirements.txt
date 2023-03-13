@@ -27,6 +27,7 @@ dill==0.3.6
 exceptiongroup==1.1.0
 executing==1.2.0
 fastjsonschema==2.16.3
+fontawesome==5.10.1.post1
 flatbuffers==23.3.3
 fonttools==4.38.0
 fqdn==1.5.1
