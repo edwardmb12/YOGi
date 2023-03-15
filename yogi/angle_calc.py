@@ -213,11 +213,7 @@ def plot_on_image(image, keypoints_with_scores):
 
         return angle
 
-def angle_calc():  #(image_capture)
-    image_path = root_dir + '/' + 'Boat_Pose_or_Paripurna_Navasana_.jpeg'
-    image = tf.io.read_file(image_path)
-    image = tf.image.decode_jpeg(image)
-    input_size = 192
+def angle_calc(image):  #(image_capture)
 
     # Resize and pad the image to keep the aspect ratio and fit the expected size.
     input_image = tf.expand_dims(image, axis=0)
@@ -225,6 +221,13 @@ def angle_calc():  #(image_capture)
 
     # Run model inference.
     keypoints_with_scores = movenet(input_image)
+
+    # Visualize the predictions with image.
+    display_image = tf.expand_dims(image, axis=0)
+    display_image = tf.cast(tf.image.resize_with_pad(
+        display_image, 1280, 1280), dtype=tf.int32)
+    output_overlay = draw_prediction_on_image(
+        np.squeeze(display_image.numpy(), axis=0), keypoints_with_scores)
 
     key_xy = keypoints_with_scores[:, :, :, :2]
 
@@ -234,26 +237,18 @@ def angle_calc():  #(image_capture)
         vector = tuple(key_xy[0, 0, value])
         key_dict[key] = vector
 
-    # Dictionary that maps from joint names to keypoint indices.
-    KEYPOINT_DICT = {
-        'nose': 0,
-        'left_eye': 1,
-        'right_eye': 2,
-        'left_ear': 3,
-        'right_ear': 4,
-        'left_shoulder': 5,
-        'right_shoulder': 6,
-        'left_elbow': 7,
-        'right_elbow': 8,
-        'left_wrist': 9,
-        'right_wrist': 10,
-        'left_hip': 11,
-        'right_hip': 12,
-        'left_knee': 13,
-        'right_knee': 14,
-        'left_ankle': 15,
-        'right_ankle': 16
-    }
+    def calculate_angle(a,b,c):
+        a = np.array(a) # First
+        b = np.array(b) # Mid
+        c = np.array(c) # End
+
+        radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
+        angle = np.abs(radians*180.0/np.pi)
+
+        if angle >180.0:
+            angle = 360-angle
+
+        return angle
 
     # make angles_dictionary
     angles_dictionary = {
