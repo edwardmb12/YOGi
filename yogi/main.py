@@ -10,22 +10,20 @@ from yogi.predict import pred
 
 # 2) CLASSIFICATION MODEL
 
-    ## TAKES IMAGE CAPTURE AS FEED
-
-    image_input
+def classification_model(image_input=None, model):
 
     ## PREPROCESS IMAGE CAPTURE
 
     preprocessed_image = preprocess_image(image_input)
 
-    ## LOAD MODEL
-
-    model = loading_model()
-
     ## PREDICT
 
-    prediction = pred(model, preprocessed_image)
+    pose, pose_proba = pred(model, preprocessed_image)
 
+    if pose_proba < 0.6:
+        pose = "Detecting Pose ..."
+
+    return pose
 
 # 3) POSE DETECTION MODEL
 
