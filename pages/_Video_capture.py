@@ -15,8 +15,10 @@ from PIL import Image
 import streamlit as st
 import av
 import queue
+
 from datetime import datetime
 
+st.set_page_config(layout="wide")
 
 page_bg_img =  """
     <style>
@@ -91,44 +93,50 @@ points = mpPose.PoseLandmark#(
     #min_tracking_confidence=0.5)
 
 
+col1, col2 = st.columns([3,1])
 
-def main(model=[],label=[]):
 
-    class SignPredictor(VideoProcessorBase):
+class SignPredictor(VideoProcessorBase):
 
-        def __init__(self) -> None:
-            # Hand detector
-            # self.hand_detector = HandDetector(detectionCon=0.5, maxHands=1)
+    def __init__(self) -> None:
+        # Hand detector
+        # self.hand_detector = HandDetector(detectionCon=0.5, maxHands=1)
 
-            #Queue to share information that happen within the live video thread outside the thread
-            self.result_queue = queue.Queue()
+        #Queue to share information that happen within the live video thread outside the thread
+        self.result_queue = queue.Queue()
 
-        def process(self, image):
+
+    def predict_pose():
+        #get every fourth frame
+        pose = main.classification_model(image, model)
+        if pose == "Detecting Pose ...":
             pass
-            #move net in here?
-
-        def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
-            #pose prediction
-            image = frame.to_ndarray(format="rgb24")
-            pose = main.classification_model(image_input=image, model=model)
+        else:
+            im1 = f"Ground_Truths/{pose}.jpeg"
+            col2.text(pose)
+            col2.image(im1)
 
 
-            return av.VideoFrame.from_ndarray(image, format="rgb24"), st.markdown("prediction") #pass back image with move net on
+    def process(self, image):
+        pass
+        #move net in here?
 
-    webrtc_streamer(
-        key="object-detection",
-        mode=WebRtcMode.SENDRECV,
-        video_processor_factory=SignPredictor,
-        media_stream_constraints={
-            "video": True,
-            "audio": False
-        },
-        async_processing=True,
-    )
+    def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
+        #pose prediction
+        image = frame.to_ndarray(format="rgb24")
+        processed_image = preprocessor.preprocess_image(image)
+        pose, probab= predict.pred(processed_image, model)
 
+        return av.VideoFrame.from_ndarray(image, format="rgb24") #pass back image with move net on
 
 
-
-
-if __name__ == "__main__":
-    main()
+webrtc_streamer(
+    key="object-detection",
+    mode=WebRtcMode.SENDRECV,
+    video_processor_factory=SignPredictor,
+    media_stream_constraints={
+        "video": True,
+        "audio": False
+    },
+    async_processing=True,
+)

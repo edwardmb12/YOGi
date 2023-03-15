@@ -10,14 +10,12 @@ from yogi.predict import pred
 
 # 2) CLASSIFICATION MODEL
 
-def classification_model(image_input=None, model):
+def classification_model(model, image_input=None):
 
     ## PREPROCESS IMAGE CAPTURE
-
     preprocessed_image = preprocess_image(image_input)
 
     ## PREDICT
-
     pose, pose_proba = pred(model, preprocessed_image)
 
     if pose_proba < 0.6:

@@ -5,11 +5,7 @@ from PIL import Image
 from functions import add_bg_from_local
 import os
 
-st.set_page_config(
-    page_title="Yogi",
-    page_icon="🧘‍♂️",
-)
-
+st.set_page_config(layout="wide")
 
 page_bg_img =  """
     <style>
