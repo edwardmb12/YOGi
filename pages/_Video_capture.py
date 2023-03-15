@@ -5,7 +5,6 @@ import av
 import mediapipe as mp
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 from streamlit_webrtc import (
-VideoTransformerBase,
 VideoProcessorBase,
 webrtc_streamer,
 VideoHTMLAttributes)
@@ -13,7 +12,10 @@ import threading
 import matplotlib.pyplot as plt
 from yogi import preprocessor, load_predict, params
 from PIL import Image
-#need to import position detection and feed in an image
+import streamlit as st
+import av
+import queue
+
 
 
 page_bg_img =  """
@@ -91,45 +93,45 @@ points = mpPose.PoseLandmark#(
 
 
 
-class VideoProcessor(VideoProcessorBase):
-    def __init__(self):
-        self.style = 'color'
+# class VideoProcessor(VideoProcessorBase):
+#     def __init__(self):
+#         self.style = 'color'
 
-    def video_frame_callback(self):
-        img = self.to_ndarray(format="bgr24")
-        with lock:
-            if img is not None:
-                img_container["frames"].append(img)
-
-
+#     def video_frame_callback(self):
+#         img = self.to_ndarray(format="bgr24")
+#         with lock:
+#             if img is not None:
+#                 img_container["frames"].append(img)
 
 
-def main():
-    playing = st.checkbox("Start/Stop", value=False)
 
-    if playing:
-        st.session_state["photo_frames"]=[]
-        webrtc_streamer(
-            key="object-detection",
-            video_frame_callback=VideoProcessor.video_frame_callback,
-            media_stream_constraints={
-                "video": True
-            },
-            desired_playing_state=playing #link to Start/Stop button
-            ,  rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-                            }
-        )
 
-    #Storing photo frames
-    if 'photo_frames' not in st.session_state:
-        st.session_state['photo_frames'] = img_container["frames"]
-    else:
-        if len(st.session_state['photo_frames']) < 1:
-            st.session_state['photo_frames'] = img_container["frames"]
+# def main():
+#     playing = st.checkbox("Start/Stop", value=False)
 
-    if not playing:
-        #Extracting the frames
-        full_frames=st.session_state["photo_frames"]
+#     if playing:
+#         st.session_state["photo_frames"]=[]
+#         webrtc_streamer(
+#             key="object-detection",
+#             video_frame_callback=VideoProcessor.video_frame_callback,
+#             media_stream_constraints={
+#                 "video": True
+#             },
+#             desired_playing_state=playing #link to Start/Stop button
+#             ,  rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+#                             }
+#         )
+
+#     #Storing photo frames
+#     if 'photo_frames' not in st.session_state:
+#         st.session_state['photo_frames'] = img_container["frames"]
+#     else:
+#         if len(st.session_state['photo_frames']) < 1:
+#             st.session_state['photo_frames'] = img_container["frames"]
+
+#     if not playing:
+#         #Extracting the frames
+#         full_frames=st.session_state["photo_frames"]
 
 
 #full frames is a list of an arrays of each image
@@ -137,24 +139,66 @@ def main():
 
 
 
-def process(image):
-    image.flags.writeable = False
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    results = pose.process(image)
-# Draw the hand annotations on the image.
-    image.flags.writeable = True
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    if results.pose_landmarks:
-        mp_drawing.draw_landmarks(image, results.pose_landmarks, mpPose.POSE_CONNECTIONS
-            #, mp_drawing_styles.get_default_hand_landmarks_style(),
-            #mp_drawing_styles.get_default_hand_connections_style()
-            )
-        landmarks = results.pose_landmarks.landmark
-    return cv2.flip(image, 1)
-RTC_CONFIGURATION = RTCConfiguration(
-    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-)
+# def process(image):
+#     image.flags.writeable = False
+#     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+#     results = pose.process(image)
+# # Draw the hand annotations on the image.
+#     image.flags.writeable = True
+#     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+#     if results.pose_landmarks:
+#         mp_drawing.draw_landmarks(image, results.pose_landmarks, mpPose.POSE_CONNECTIONS
+#             #, mp_drawing_styles.get_default_hand_landmarks_style(),
+#             #mp_drawing_styles.get_default_hand_connections_style()
+#             )
+#         landmarks = results.pose_landmarks.landmark
+#     return cv2.flip(image, 1)
+# RTC_CONFIGURATION = RTCConfiguration(
+#     {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+# )
 
+
+# def pose_detection():
+#     processed_image = [preprocessor(image) for imag]
+
+
+
+
+def main(model=[],label=[]):
+
+    class SignPredictor(VideoProcessorBase):
+
+        def __init__(self) -> None:
+            # Hand detector
+            # self.hand_detector = HandDetector(detectionCon=0.5, maxHands=1)
+
+            #Queue to share information that happen within the live video thread outside the thread
+            self.result_queue = queue.Queue()
+
+        def find_hands(self, image):
+            pass
+            #move net in here?
+
+        def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
+            #pose prediction
+            image = frame.to_ndarray(format="rgb24")
+            poses = params.POSES_LIST
+            processed_image = preprocessor(image)
+            predicted_pose = poses[np.argmax(load_predict(processed_image))]
+
+            st.markdown("predicted_pose")
+            return av.VideoFrame.from_ndarray(image, format="rgb24") #pass back image with move net on
+
+    webrtc_streamer(
+        key="object-detection",
+        mode=WebRtcMode.SENDRECV,
+        video_processor_factory=SignPredictor,
+        media_stream_constraints={
+            "video": True,
+            "audio": False
+        },
+        async_processing=True,
+    )
 
 
 
