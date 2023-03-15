@@ -1,18 +1,17 @@
 
 import matplotlib.pyplot as plt
-from tensorflow.image import ResizeMethod
-from tensorflow.image import resize_with_pad
+from tensorflow import image
 from tensorflow import reshape
 from yogi.params import IMG_HEIGHT
 from yogi.params import IMG_WIDTH
 
 
 def preprocess_image(image_input):
-    preproc_image = resize_with_pad(
+    preproc_image = image.resize_with_pad(
                                 image_input,
                                 IMG_HEIGHT,
                                 IMG_WIDTH,
-                                method=ResizeMethod.LANCZOS3,
+                                method=image.ResizeMethod.LANCZOS3,
                                 )
 
     preproc_image = preproc_image/255.0
