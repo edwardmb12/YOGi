@@ -1,7 +1,6 @@
 
-from tensorflow.keras.models import load_model
+import tensorflow as tf
 
 def loading_model():
-    model = load_model("../saved_models/model1")
-
+    model = tf.keras.models.load_model("../saved_models/model_2")
     return model

@@ -10,7 +10,7 @@ webrtc_streamer,
 VideoHTMLAttributes)
 import threading
 import matplotlib.pyplot as plt
-from yogi import preprocessor, load_predict, params
+from yogi import preprocessor, load, params, predict
 from PIL import Image
 import streamlit as st
 import av
@@ -162,9 +162,9 @@ points = mpPose.PoseLandmark#(
 #     processed_image = [preprocessor(image) for imag]
 
 
+model = load.loading_model()
 
-
-def main(model=[],label=[]):
+def main(model=model,label=[]):
 
     class SignPredictor(VideoProcessorBase):
 
@@ -182,12 +182,10 @@ def main(model=[],label=[]):
         def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
             #pose prediction
             image = frame.to_ndarray(format="rgb24")
-            poses = params.POSES_LIST
-            processed_image = preprocessor(image)
-            predicted_pose = poses[np.argmax(load_predict(processed_image))]
+            processed_image = preprocessor.preprocess_image(image)
+            pose, probability = predict.pred(processed_image, model)
 
-            st.markdown("predicted_pose")
-            return av.VideoFrame.from_ndarray(image, format="rgb24") #pass back image with move net on
+            return av.VideoFrame.from_ndarray(image, format="rgb24"), st.markdown("prediction") #pass back image with move net on
 
     webrtc_streamer(
         key="object-detection",
