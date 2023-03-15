@@ -3,8 +3,8 @@
 
 # IMPORTS
 from yogi.preprocessor import preprocess_image
-from yogi.load import loading_model
 from yogi.predict import pred
+from yogi.params import POSE_PROBA_THRESHOLD
 
 # 1) IMAGE CAPTURE
 
@@ -20,7 +20,7 @@ def classification_model(image_input=None, model):
 
     pose, pose_proba = pred(model, preprocessed_image)
 
-    if pose_proba < 0.6:
+    if pose_proba < POSE_PROBA_THRESHOLD:
         pose = "Detecting Pose ..."
 
     return pose
