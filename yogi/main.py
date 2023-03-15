@@ -5,8 +5,14 @@
 from yogi.preprocessor import preprocess_image
 from yogi.predict import pred
 from yogi.params import POSE_PROBA_THRESHOLD
+import json
 
 # 1) IMAGE CAPTURE
+# Opening JSON file from webcam capture and giving rgb array in form (398, 704, 3)
+with open('img_array.json', 'r') as infile:
+    img_array_from_json = np.array(json.load(infile))
+
+img_array_from_json
 
 # 2) CLASSIFICATION MODEL
 
