@@ -162,9 +162,9 @@ points = mpPose.PoseLandmark#(
 #     processed_image = [preprocessor(image) for imag]
 
 
-model = load.loading_model()
+# model = load.loading_model()
 
-def main(model=model,label=[]):
+def main(model=[],label=[]):
 
     class SignPredictor(VideoProcessorBase):
 
