@@ -1,6 +1,7 @@
 
 ##################  VARIABLES  ##################
 
+POSE_PROBA_THRESHOLD = 0.6
 
 
 ##################  CONSTANTS  #####################
@@ -24,7 +25,7 @@ POSES_LIST = ['.ipynb_checkpoints',
  'Cow_Face_Pose_or_Gomukhasana_',
  'Cow_Pose',
  'Crane_(Crow)_Pose',
- 'Downward-Facing_Dog_pose_or_Adho_Mukha_Svanasana_',
+ 'Downward_Facing_Dog_pose_or_Adho_Mukha_Svanasana_',
  'Eagle_Pose_or_Garudasana_',
  'Eight-Angle_Pose_or_Astavakrasana_',
  'Extended_Puppy_Pose_or_Uttana_Shishosana_',

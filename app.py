@@ -5,11 +5,7 @@ from PIL import Image
 from functions import add_bg_from_local
 import os
 
-st.set_page_config(
-    page_title="Yogi",
-    page_icon="🧘‍♂️",
-)
-
+st.set_page_config(layout="wide")
 
 page_bg_img =  """
     <style>
@@ -23,7 +19,7 @@ page_bg_img =  """
         background-position: top left;
         background-repeat: no-repeat;
     }
-    
+
     [data-testid="stSidebar"] {
         background-size: cover;
         background-position: top left;
@@ -101,5 +97,3 @@ st.image(image=slide_4)
 st.image(image=slide_5)
 st.image(image=slide_6)
 st.image(image=slide_7)
-
-# st.image(image=image, caption="Team YOGi")

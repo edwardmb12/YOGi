@@ -10,13 +10,15 @@ webrtc_streamer,
 VideoHTMLAttributes)
 import threading
 import matplotlib.pyplot as plt
-from yogi import preprocessor, load, params, predict
+from yogi import preprocessor, load, params, predict, main
 from PIL import Image
 import streamlit as st
 import av
 import queue
 
+from datetime import datetime
 
+st.set_page_config(layout="wide")
 
 page_bg_img =  """
     <style>
@@ -72,10 +74,10 @@ MuiBox-root css-0
 
 """
 
-st.metric(label="", value="Video Capture")
+st.metric(label="video_captues", value="Video Capture")
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-
+model = load.loading_model()
 
 #Defining the variables
 lock = threading.Lock()
@@ -91,116 +93,50 @@ points = mpPose.PoseLandmark#(
     #min_tracking_confidence=0.5)
 
 
+col1, col2 = st.columns([3,1])
 
 
-# class VideoProcessor(VideoProcessorBase):
-#     def __init__(self):
-#         self.style = 'color'
+class SignPredictor(VideoProcessorBase):
 
-#     def video_frame_callback(self):
-#         img = self.to_ndarray(format="bgr24")
-#         with lock:
-#             if img is not None:
-#                 img_container["frames"].append(img)
+    def __init__(self) -> None:
+        # Hand detector
+        # self.hand_detector = HandDetector(detectionCon=0.5, maxHands=1)
 
+        #Queue to share information that happen within the live video thread outside the thread
+        self.result_queue = queue.Queue()
 
 
-
-# def main():
-#     playing = st.checkbox("Start/Stop", value=False)
-
-#     if playing:
-#         st.session_state["photo_frames"]=[]
-#         webrtc_streamer(
-#             key="object-detection",
-#             video_frame_callback=VideoProcessor.video_frame_callback,
-#             media_stream_constraints={
-#                 "video": True
-#             },
-#             desired_playing_state=playing #link to Start/Stop button
-#             ,  rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-#                             }
-#         )
-
-#     #Storing photo frames
-#     if 'photo_frames' not in st.session_state:
-#         st.session_state['photo_frames'] = img_container["frames"]
-#     else:
-#         if len(st.session_state['photo_frames']) < 1:
-#             st.session_state['photo_frames'] = img_container["frames"]
-
-#     if not playing:
-#         #Extracting the frames
-#         full_frames=st.session_state["photo_frames"]
-
-
-#full frames is a list of an arrays of each image
-
-
-
-
-# def process(image):
-#     image.flags.writeable = False
-#     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-#     results = pose.process(image)
-# # Draw the hand annotations on the image.
-#     image.flags.writeable = True
-#     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-#     if results.pose_landmarks:
-#         mp_drawing.draw_landmarks(image, results.pose_landmarks, mpPose.POSE_CONNECTIONS
-#             #, mp_drawing_styles.get_default_hand_landmarks_style(),
-#             #mp_drawing_styles.get_default_hand_connections_style()
-#             )
-#         landmarks = results.pose_landmarks.landmark
-#     return cv2.flip(image, 1)
-# RTC_CONFIGURATION = RTCConfiguration(
-#     {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-# )
-
-
-# def pose_detection():
-#     processed_image = [preprocessor(image) for imag]
-
-
-model = load.loading_model()
-
-def main(model=model,label=[]):
-
-    class SignPredictor(VideoProcessorBase):
-
-        def __init__(self) -> None:
-            # Hand detector
-            # self.hand_detector = HandDetector(detectionCon=0.5, maxHands=1)
-
-            #Queue to share information that happen within the live video thread outside the thread
-            self.result_queue = queue.Queue()
-
-        def find_hands(self, image):
+    def predict_pose():
+        #get every fourth frame
+        pose = main.classification_model(image, model)
+        if pose == "Detecting Pose ...":
             pass
-            #move net in here?
-
-        def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
-            #pose prediction
-            image = frame.to_ndarray(format="rgb24")
-            processed_image = preprocessor.preprocess_image(image)
-            pose, probability = predict.pred(processed_image, model)
-
-            return av.VideoFrame.from_ndarray(image, format="rgb24"), st.markdown("prediction") #pass back image with move net on
-
-    webrtc_streamer(
-        key="object-detection",
-        mode=WebRtcMode.SENDRECV,
-        video_processor_factory=SignPredictor,
-        media_stream_constraints={
-            "video": True,
-            "audio": False
-        },
-        async_processing=True,
-    )
+        else:
+            im1 = f"Ground_Truths/{pose}.jpeg"
+            col2.text(pose)
+            col2.image(im1)
 
 
+    def process(self, image):
+        pass
+        #move net in here?
+
+    def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
+        #pose prediction
+        image = frame.to_ndarray(format="rgb24")
+        processed_image = preprocessor.preprocess_image(image)
+        pose, probab= predict.pred(processed_image, model)
+
+        return av.VideoFrame.from_ndarray(image, format="rgb24") #pass back image with move net on
 
 
-
-if __name__ == "__main__":
-    main()
+webrtc_streamer(
+    key="object-detection",
+    mode=WebRtcMode.SENDRECV,
+    video_processor_factory=SignPredictor,
+    media_stream_constraints={
+        "video": True,
+        "audio": False
+    },
+    async_processing=True,
+)
