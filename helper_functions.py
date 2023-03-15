@@ -1,4 +1,3 @@
-
 # Solutions: drawing styles
 # Solutions: drawing utilities
 # Solutions:
@@ -15,6 +14,7 @@ from IPython.display import HTML, display
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+import tensorflow as tf
 #@title Helper functions for visualization
 
 # Dictionary that maps from joint names to keypoint indices.
@@ -207,31 +207,31 @@ def progress(value, max=100):
   """.format(value=value, max=max))
 
 def init_crop_region(image_height, image_width):
-  """Defines the default crop region.
+    """Defines the default crop region.
 
-  The function provides the initial crop region (pads the full image from both
-  sides to make it a square image) when the algorithm cannot reliably determine
-  the crop region from the previous frame.
-  """
-  if image_width > image_height:
-    box_height = image_width / image_height
-    box_width = 1.0
-    y_min = (image_height / 2 - image_width / 2) / image_height
-    x_min = 0.0
-  else:
-    box_height = 1.0
-    box_width = image_height / image_width
-    y_min = 0.0
-    x_min = (image_width / 2 - image_height / 2) / image_width
+    The function provides the initial crop region (pads the full image from both
+    sides to make it a square image) when the algorithm cannot reliably determine
+    the crop region from the previous frame.
+    """
+    if image_width > image_height:
+        box_height = image_width / image_height
+        box_width = 1.0
+        y_min = (image_height / 2 - image_width / 2) / image_height
+        x_min = 0.0
+    else:
+        box_height = 1.0
+        box_width = image_height / image_width
+        y_min = 0.0
+        x_min = (image_width / 2 - image_height / 2) / image_width
 
-  return {
+    return {
     'y_min': y_min,
     'x_min': x_min,
     'y_max': y_min + box_height,
     'x_max': x_min + box_width,
     'height': box_height,
     'width': box_width
-  }
+    }
 
 def torso_visible(keypoints):
   """Checks whether there are enough torso keypoints.
@@ -340,7 +340,7 @@ def crop_and_resize(image, crop_region, crop_size):
   """Crops and resize the image to prepare for the model input."""
   boxes=[[crop_region['y_min'], crop_region['x_min'],
           crop_region['y_max'], crop_region['x_max']]]
-  output_image = image.crop_and_resize(
+  output_image = tf.image.crop_and_resize(
       image, box_indices=[0], boxes=boxes, crop_size=crop_size)
   return output_image
 
