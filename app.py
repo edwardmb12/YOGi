@@ -23,7 +23,7 @@ page_bg_img =  """
         background-position: top left;
         background-repeat: no-repeat;
     }
-    
+
     [data-testid="stSidebar"] {
         background-size: cover;
         background-position: top left;
@@ -101,5 +101,3 @@ st.image(image=slide_4)
 st.image(image=slide_5)
 st.image(image=slide_6)
 st.image(image=slide_7)
-
-# st.image(image=image, caption="Team YOGi")

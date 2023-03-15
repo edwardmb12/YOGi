@@ -10,12 +10,11 @@ webrtc_streamer,
 VideoHTMLAttributes)
 import threading
 import matplotlib.pyplot as plt
-from yogi import preprocessor, load, params, predict
+from yogi import preprocessor, load, params, predict, main
 from PIL import Image
 import streamlit as st
 import av
 import queue
-
 from datetime import datetime
 
 
@@ -111,9 +110,7 @@ def main(model=[],label=[]):
         def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
             #pose prediction
             image = frame.to_ndarray(format="rgb24")
-            processed_image = preprocessor.preprocess_image(image)
-            pose, probability = predict.pred(processed_image, model)
-
+            pose = main.classification_model(image_input=image, model=model)
 
 
             return av.VideoFrame.from_ndarray(image, format="rgb24"), st.markdown("prediction") #pass back image with move net on
