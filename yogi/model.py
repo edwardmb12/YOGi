@@ -4,6 +4,8 @@ from tensorflow.keras import utils, optimizers
 from tensorflow.keras import models, layers
 from tensorflow.keras.applications import densenet
 from tensorflow.keras.callbacks import EarlyStopping
+from yogi.params import IMG_HEIGHT
+from yogi.params import IMG_WIDTH
 
 ################## MODEL #################
 
@@ -11,7 +13,7 @@ def initialize_model():
     base_model = densenet.DenseNet169(
                         include_top=False,
                         weights='imagenet',
-                        input_shape=(img_height, img_width, 3),
+                        input_shape=(IMG_HEIGHT, IMG_WIDTH, 3),
                         classifier_activation='softmax')
 
     base_model.trainable = True
@@ -51,4 +53,4 @@ def train_model(model, train_generator, validation_generator, batch_size):
                 batch_size=batch_size
                 callbacks=[es])
 
-    return history
+    return model, history
