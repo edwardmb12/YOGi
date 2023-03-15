@@ -5,6 +5,7 @@
 from yogi.preprocessor import preprocess_image
 from yogi.load import loading_model
 from yogi.predict import pred
+from yogi.threshold import threshold
 
 # 1) IMAGE CAPTURE
 
@@ -25,6 +26,15 @@ from yogi.predict import pred
     ## PREDICT
 
     prediction = pred(model, preprocessed_image)
+    pose_name = prediction[0]
+    pose_proba = prediction[1]
+
+    ## THRESHOLD
+    if pose_proba < 0.6:
+        print("Detecting Pose ...")
+    else:
+        print(pose_name)
+
 
 
 # 3) POSE DETECTION MODEL
