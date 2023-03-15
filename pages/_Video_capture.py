@@ -10,13 +10,13 @@ webrtc_streamer,
 VideoHTMLAttributes)
 import threading
 import matplotlib.pyplot as plt
-from yogi import preprocessor, load, params, predict, main
+from yogi import preprocessor, load, predict, main
 from PIL import Image
 import streamlit as st
 import av
 import queue
+# from helper_functions import run_inference, draw_prediction_on_image, determine_crop_region, KEYPOINT_DICT, KEYPOINT_EDGE_INDS_TO_COLOR, init_crop_region
 
-from datetime import datetime
 
 st.set_page_config(layout="wide")
 
@@ -97,7 +97,6 @@ col1, col2 = st.columns([3,1])
 
 
 class SignPredictor(VideoProcessorBase):
-
     def __init__(self) -> None:
         # Hand detector
         # self.hand_detector = HandDetector(detectionCon=0.5, maxHands=1)
@@ -106,7 +105,7 @@ class SignPredictor(VideoProcessorBase):
         self.result_queue = queue.Queue()
 
 
-    def predict_pose():
+    def predict_pose(self):
         #get every fourth frame
         pose = main.classification_model(image, model)
         if pose == "Detecting Pose ...":
@@ -140,3 +139,45 @@ webrtc_streamer(
     },
     async_processing=True,
 )
+
+# RTC_CONFIGURATION = RTCConfiguration(
+#     {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+# )
+
+# class VideoProcessor:
+#     def __init__(self) -> None:
+#         self.count = 0
+#         self.crop_region = init_crop_region(300, 300)
+
+#     def process(self, image):
+#         image_height, image_width, _ = image.shape
+#         keypoints_with_scores = run_inference(movenet, image, self.crop_region,crop_size=[192, 192])
+#         output_image = draw_prediction_on_image(image.astype(np.int32), keypoints_with_scores,
+#                             crop_region=None, close_figure=True, output_image_height=300)
+#         self.crop_region = determine_crop_region(keypoints_with_scores, image_height, image_width)
+#         return output_image
+
+#     def predict_pose(self):
+#         #get every fourth frame
+#         pose = main.classification_model(image, model)
+#         if pose == "Detecting Pose ...":
+#             pass
+#         else:
+#             im1 = f"Ground_Truths/{pose}.jpeg"
+#             col2.text(pose)
+#             col2.image(im1)
+
+#     def recv(self, frame):
+#         img = frame.to_ndarray(format="bgr24")
+#         img = self.process(img).astype(np.uint8)
+#         return av.VideoFrame.from_ndarray(img, format="bgr24")
+
+
+
+# webrtc_ctx = webrtc_streamer(
+#     key="WYH",
+#     mode=WebRtcMode.SENDRECV,
+#     rtc_configuration=RTC_CONFIGURATION,
+#     media_stream_constraints={"video": True, "audio": False},
+#     video_processor_factory=VideoProcessor,
+#     async_processing=True)
