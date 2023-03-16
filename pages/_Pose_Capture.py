@@ -119,20 +119,19 @@ if img_file_buffer is not None:
     # st.write(img_array.shape)
     # st.write(img_array)
 
-    # save the numpy array to a JSON file
-    with open('img_array.json', 'w') as outfile:
-        json.dump(img_array.tolist(), outfile)
+    # # save the numpy array to a JSON file
+    # with open('img_array.json', 'w') as outfile:
+    #     json.dump(img_array.tolist(), outfile)
 
-    # load the numpy array from the JSON file and reshape it to its original form
-    with open('img_array.json', 'r') as infile:
-        img_array_from_json = np.array(json.load(infile))
+    # # load the numpy array from the JSON file and reshape it to its original form
+    # with open('img_array.json', 'r') as infile:
+    #     img_array_from_json = np.array(json.load(infile))
 
-    # check that the loaded numpy array has the same shape as the original array
-    assert img_array_from_json.shape == img_array.shape
+    # # check that the loaded numpy array has the same shape as the original array
+    # assert img_array_from_json.shape == img_array.shape
 
-    # check that the loaded numpy array has the same values as the original array
-    assert np.array_equal(img_array_from_json, img_array)
-
+    # # check that the loaded numpy array has the same values as the original array
+    # assert np.array_equal(img_array_from_json, img_array)
 
 
 
@@ -141,16 +140,15 @@ try:
     prediction = main.classification_model(model, img_array)
     col2.text(prediction.replace("_", " "))
 except:
-    pass
+    print('error with cnn')
 
 try:
     col2.image(f"Ground_Truths/{prediction}.jpeg")
 except:
-    pass
-
+    print('error with showing gt')
 
 try:
-    image = main.pose_detection_model(image="image_capture.jpeg", model=model)
+    image = main.pose_detection_model(img, prediction)
     col2.image(image)
 except:
-    pass
+    print('error with movenet')
