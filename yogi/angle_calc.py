@@ -333,7 +333,7 @@ def angle_calc(image, keypoints_with_scores):  #(image_capture)
     # Visualize the predictions with image.
     display_image = tf.expand_dims(image, axis=0)
     display_image = tf.cast(tf.image.resize_with_pad(
-    display_image, 1280, 1280), dtype=tf.int32)
+        display_image, 1280, 1280), dtype=tf.int32)
     output_overlay = draw_prediction_on_image(
         np.squeeze(display_image.numpy(), axis=0), keypoints_with_scores)
 
