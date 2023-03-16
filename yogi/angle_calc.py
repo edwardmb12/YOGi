@@ -321,7 +321,7 @@ def calculate_angle(a,b,c):
     return angle
 
 
-def angle_calc(image, keypoints_with_scores):  #(image_capture)
+def angle_calculation(image, keypoints_with_scores):  #(image_capture)
     # input_size = 192
     # Resize and pad the image to keep the aspect ratio and fit the expected size.
     # input_image = tf.expand_dims(image, axis=0)

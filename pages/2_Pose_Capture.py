@@ -151,7 +151,7 @@ except:
     print('error with showing gt')
 
 try:
-    image = main.pose_detection_model(img, prediction)
-    col2.image(image)
+    output_overlay = main.pose_detection_model(img_array, prediction)
+    col2.image(output_overlay)
 except:
-    print('error with movenet')
+    print('error with plot')
