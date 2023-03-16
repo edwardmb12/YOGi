@@ -15,6 +15,9 @@ from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 #need to import position detection and feed in an image
 #import mediapipe as mp
 
+
+st.set_page_config(layout="wide")
+
 page_bg_img =  """
     <style>
 

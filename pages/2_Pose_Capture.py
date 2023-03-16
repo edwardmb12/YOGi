@@ -3,9 +3,6 @@ from PIL import Image
 import numpy as np
 import json
 import pandas as pd
-
-img_file_buffer = st.camera_input("Take a picture")
-
 from yogi import load, main
 import numpy as np
 
@@ -94,7 +91,7 @@ MuiBox-root css-0
 st.markdown(page_bg_img, unsafe_allow_html=True)
 st.metric(label="", value="Picture Capture")
 
-col1, col2 = st.columns([2,1])
+col1, col2 = st.columns(2)
 
 img_file_buffer = None
 img_file_buffer = col1.camera_input("Take a picture")
@@ -143,7 +140,7 @@ if img_file_buffer is not None:
 
 try:
     prediction = main.classification_model(model, img_array)
-    col2.text(prediction.replace("_", " "))
+    col2.metric(label="", value=prediction.replace("_", " "))
 except:
     print('error with cnn')
 
