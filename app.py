@@ -117,7 +117,7 @@ col1.image("images/about4.jpeg")
 col2.image("images/about.jpg")
 
 st.text("""
-        YOGi is used by home-practising yogis to use while unassisted.
+        YOGi is for home-practising yogis to use while unassisted.
         The user feeds YOGi an image. It will then detect the pose,
         if the pose is sufficiently correct, and provide corrective feedback.
         """)

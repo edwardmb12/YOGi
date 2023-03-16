@@ -68,7 +68,7 @@ page_bg_img =  """
         border-radius: 4px;
         opacity: 0.8;
         text-align: center;
-        font-size: 30px
+        font-size: 20px
     }
 
         [data-testid="stImage"] {
@@ -86,8 +86,6 @@ page_bg_img =  """
         width: 100%;
         margin: 3%
     }
-
-
 
 MuiBox-root css-0
     </style>
@@ -118,7 +116,7 @@ KEYPOINT_EDGE_INDS_TO_COLOR = {
 
 
 st.markdown(page_bg_img, unsafe_allow_html=True)
-st.text("Picture Capture")
+st.metric(label="", value="Picture Capture")
 
 col1, col2 = st.columns(2)
 
@@ -145,7 +143,7 @@ if img_file_buffer is not None:
 
 try:
     prediction = main.classification_model(model, img_array)
-    col2.metric(label="", value=prediction.replace("_", " "))
+    col2.text(prediction.replace("_", " "))
 except:
     print('error with cnn')
 

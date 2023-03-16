@@ -15,157 +15,7 @@ import imageio
 from IPython.display import HTML, display
 import json
 
-# Dictionary that maps from joint names to keypoint indices.
-KEYPOINT_DICT = {
-    'nose': 0,
-    'left_eye': 1,
-    'right_eye': 2,
-    'left_ear': 3,
-    'right_ear': 4,
-    'left_shoulder': 5,
-    'right_shoulder': 6,
-    'left_elbow': 7,
-    'right_elbow': 8,
-    'left_wrist': 9,
-    'right_wrist': 10,
-    'left_hip': 11,
-    'right_hip': 12,
-    'left_knee': 13,
-    'right_knee': 14,
-    'left_ankle': 15,
-    'right_ankle': 16
-}
 
-# Maps bones to a matplotlib color name.
-KEYPOINT_EDGE_INDS_TO_COLOR = {
-    (0, 1): 'g',
-    (0, 2): 'g',
-    (1, 3): 'g',
-    (2, 4): 'g',
-    (0, 5): 'g',
-    (0, 6): 'g',
-    (5, 7): 'g',
-    (7, 9): 'g',
-    (6, 8): 'g',
-    (8, 10): 'g',
-    (5, 6): 'g',
-    (5, 11): 'g',
-    (6, 12): 'g',
-    (11, 12): 'g',
-    (11, 13): 'g',
-    (13, 15): 'g',
-    (12, 14): 'g',
-    (14, 16): 'g',
-}
-
-Downward_Facing_Dog_pose_or_Adho_Mukha_Svanasana_m = {
-    "left_elbow_a": 1,
-    "right_elbow_a": 1,
-    "left_shoulder_b": 0,
-    "left_shoulder_a": 0,
-    "right_shoulder_b": 0,
-    "right_shoulder_a": 0,
-    "left_hip_a": 0,
-    "left_hip_b": 0,
-    "left_hip_c": 0,
-    "right_hip_a": 0,
-    "right_hip_b": 0,
-    "right_hip_c": 0,
-    "left_knee_a": 1,
-    "right_knee_a": 1,
-}
-
-Tree_Pose_or_Vrksasana_m = {
-    "left_elbow_a": 0,
-    "right_elbow_a": 0,
-    "left_shoulder_b": 0,
-    "left_shoulder_a": 0,
-    "right_shoulder_b": 0,
-    "right_shoulder_a": 0,
-    "left_hip_a": 0,
-    "left_hip_b": 0,
-    "left_hip_c": 0,
-    "right_hip_a": 0,
-    "right_hip_b": 0,
-    "right_hip_c": 0,
-    "left_knee_a": 1,
-    "right_knee_a": 1,
-}
-
-Warrior_I_Pose_or_Virabhadrasana_I_m = {
-    "left_elbow_a": 1,
-    "right_elbow_a": 1,
-    "left_shoulder_b": 1,
-    "left_shoulder_a": 0,
-    "right_shoulder_b": 1,
-    "right_shoulder_a": 0,
-    "left_hip_a": 0,
-    "left_hip_b": 0,
-    "left_hip_c": 0,
-    "right_hip_a": 0,
-    "right_hip_b": 0,
-    "right_hip_c": 0,
-    "left_knee_a": 1,
-    "right_knee_a": 1,
-}
-
-Warrior_II_Pose_or_Virabhadrasana_II_m = {
-    "left_elbow_a": 1,
-    "right_elbow_a": 1,
-    "left_shoulder_b": 1,
-    "left_shoulder_a": 0,
-    "right_shoulder_b": 1,
-    "right_shoulder_a": 0,
-    "left_hip_a": 0,
-    "left_hip_b": 1,
-    "left_hip_c": 0,
-    "right_hip_a": 0,
-    "right_hip_b": 1,
-    "right_hip_c": 0,
-    "left_knee_a": 1,
-    "right_knee_a": 1,
-}
-
-Warrior_III_Pose_or_Virabhadrasana_III_m = {
-    "left_elbow_a": 1,
-    "right_elbow_a": 1,
-    "left_shoulder_b": 1,
-    "left_shoulder_a": 0,
-    "right_shoulder_b": 1,
-    "right_shoulder_a": 0,
-    "left_hip_a": 0,
-    "left_hip_b": 1,
-    "left_hip_c": 0,
-    "right_hip_a": 0,
-    "right_hip_b": 1,
-    "right_hip_c": 0,
-    "left_knee_a": 1,
-    "right_knee_a": 1,
-}
-
-def movenet(image):
-    """Runs detection on an input image.
-
-    Args:
-      input_image: A [1, height, width, 3] tensor represents the input image
-        pixels. Note that the height/width should already be resized and match the
-        expected input resolution of the model before passing into this function.
-
-    Returns:
-      A [1, 1, 17, 3] float numpy array representing the predicted keypoint
-      coordinates and scores.
-    """
-    module = hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
-
-    model = module.signatures['serving_default']
-
-    # SavedModel format expects tensor type of int32.
-    input_image = tf.cast(input_image, dtype=tf.int32)
-    # Run model inference.
-    outputs = model(input_image)
-    # Output is a [1, 1, 17, 3] tensor.
-    keypoints_with_scores = outputs['output_0'].numpy()
-    return keypoints_with_scores
 
 
 def _keypoints_and_edges_for_display(keypoints_with_scores,
@@ -321,7 +171,161 @@ def calculate_angle(a,b,c):
     return angle
 
 
-def angle_calc(image, keypoints_with_scores):  #(image_capture)
+# Dictionary that maps from joint names to keypoint indices.
+KEYPOINT_DICT = {
+    'nose': 0,
+    'left_eye': 1,
+    'right_eye': 2,
+    'left_ear': 3,
+    'right_ear': 4,
+    'left_shoulder': 5,
+    'right_shoulder': 6,
+    'left_elbow': 7,
+    'right_elbow': 8,
+    'left_wrist': 9,
+    'right_wrist': 10,
+    'left_hip': 11,
+    'right_hip': 12,
+    'left_knee': 13,
+    'right_knee': 14,
+    'left_ankle': 15,
+    'right_ankle': 16
+}
+
+# Maps bones to a matplotlib color name.
+KEYPOINT_EDGE_INDS_TO_COLOR = {
+    (0, 1): 'g',
+    (0, 2): 'g',
+    (1, 3): 'g',
+    (2, 4): 'g',
+    (0, 5): 'g',
+    (0, 6): 'g',
+    (5, 7): 'g',
+    (7, 9): 'g',
+    (6, 8): 'g',
+    (8, 10): 'g',
+    (5, 6): 'g',
+    (5, 11): 'g',
+    (6, 12): 'g',
+    (11, 12): 'g',
+    (11, 13): 'g',
+    (13, 15): 'g',
+    (12, 14): 'g',
+    (14, 16): 'g',
+}
+
+Downward_Facing_Dog_pose_or_Adho_Mukha_Svanasana_m = {
+    "left_elbow_a": 1,
+    "right_elbow_a": 1,
+    "left_shoulder_b": 0,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 0,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 0,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 0,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+Tree_Pose_or_Vrksasana_m = {
+    "left_elbow_a": 0,
+    "right_elbow_a": 0,
+    "left_shoulder_b": 0,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 0,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 0,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 0,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+Warrior_I_Pose_or_Virabhadrasana_I_m = {
+    "left_elbow_a": 1,
+    "right_elbow_a": 1,
+    "left_shoulder_b": 1,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 1,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 0,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 0,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+Warrior_II_Pose_or_Virabhadrasana_II_m = {
+    "left_elbow_a": 1,
+    "right_elbow_a": 1,
+    "left_shoulder_b": 1,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 1,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 1,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 1,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+Warrior_III_Pose_or_Virabhadrasana_III_m = {
+    "left_elbow_a": 1,
+    "right_elbow_a": 1,
+    "left_shoulder_b": 1,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 1,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 1,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 1,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+def movenet(input_image):
+    """Runs detection on an input image.
+
+    Args:
+      input_image: A [1, height, width, 3] tensor represents the input image
+        pixels. Note that the height/width should already be resized and match the
+        expected input resolution of the model before passing into this function.
+
+    Returns:
+      A [1, 1, 17, 3] float numpy array representing the predicted keypoint
+      coordinates and scores.
+    """
+    module = hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
+
+    model = module.signatures['serving_default']
+
+    # SavedModel format expects tensor type of int32.
+    input_image = tf.cast(input_image, dtype=tf.int32)
+    # Run model inference.
+
+    outputs = model(input_image)
+    # Output is a [1, 1, 17, 3] tensor.
+    keypoints_with_scores = outputs['output_0'].numpy()
+
+    return keypoints_with_scores
+
+def angle_calculation(keypoints_with_scores):  #(image_capture)
     # input_size = 192
     # Resize and pad the image to keep the aspect ratio and fit the expected size.
     # input_image = tf.expand_dims(image, axis=0)
@@ -330,12 +334,12 @@ def angle_calc(image, keypoints_with_scores):  #(image_capture)
     # Run model inference.
     # keypoints_with_scores = movenet(input_image)
 
-    # Visualize the predictions with image.
-    display_image = tf.expand_dims(image, axis=0)
-    display_image = tf.cast(tf.image.resize_with_pad(
-        display_image, 1280, 1280), dtype=tf.int32)
-    output_overlay = draw_prediction_on_image(
-        np.squeeze(display_image.numpy(), axis=0), keypoints_with_scores)
+    # # Visualize the predictions with image.
+    # display_image = tf.expand_dims(image, axis=0)
+    # display_image = tf.cast(tf.image.resize_with_pad(
+    #     display_image, 1280, 1280), dtype=tf.int32)
+    # output_overlay = draw_prediction_on_image(
+    #     np.squeeze(display_image.numpy(), axis=0), keypoints_with_scores)
 
     key_xy = keypoints_with_scores[:, :, :, :2]
 
@@ -372,9 +376,7 @@ def angle_calc(image, keypoints_with_scores):  #(image_capture)
 
     return(angles)
 
-
-#get angles comparrison
-def compare_angles(pose, angles):
+def compare_angles(prediction, angles):
 
     # Opening JSON file
     with open('data.json') as json_file:
@@ -386,12 +388,11 @@ def compare_angles(pose, angles):
         # Print the data of dictionary
         ground_pose_dict = data
 
-    image = tf.image.decode_jpeg(image)
-    dict1 = ground_pose_dict[pose]
+    dict1 = ground_pose_dict[prediction]
     dict2 = angles
     dict3 = {}
 
-    x = str(pose + 'm')
+    x = str(prediction + 'm')
     dict4 = eval(x)
 
     for dict1_key, dict1_values in dict1.items():
@@ -424,7 +425,7 @@ def render_red(dict3, KEYPOINT_EDGE_INDS_TO_COLOR):
     RED_EDGES = KEYPOINT_EDGE_INDS_TO_COLOR.copy()
 
     for k, v in dict3.items():
-        if v >= 10:
+        if v >= 5:
             points_to_color = bars_dictionary[k]
             for point in points_to_color:
                 RED_EDGES[point] = 'r'
@@ -488,7 +489,6 @@ def _keypoints_and_edges_for_display_red(keypoints_with_scores,
         edges_xy = np.zeros((0, 2, 2))
     return keypoints_xy, edges_xy, edge_colors
 
-
 def draw_prediction_on_image_red(
     image, keypoints_with_scores, crop_region=None, close_figure=False,
     output_image_height=None):
@@ -527,8 +527,10 @@ def draw_prediction_on_image_red(
     scat = ax.scatter([], [], s=60, color='#FF1493', zorder=3)
 
     (keypoint_locs, keypoint_edges,
-    edge_colors) = _keypoints_and_edges_for_display_red(
-        keypoints_with_scores, height, width)
+    edge_colors) = _keypoints_and_edges_for_display_red(keypoints_with_scores, RED_EDGES,
+                                                    height=height,
+                                                    width=width,
+                                                    keypoint_threshold=0.11)
 
     line_segments.set_segments(keypoint_edges)
     line_segments.set_color(edge_colors)
@@ -560,10 +562,7 @@ def draw_prediction_on_image_red(
             interpolation=cv2.INTER_CUBIC)
     return image_from_plot
 
-def plot_red(input_image,image):
-
-    # Run model inference.
-    keypoints_with_scores = movenet(input_image)
+def plot_red(keypoints_with_scores,image):
 
     # Visualize the predictions with image.
     display_image = tf.expand_dims(image, axis=0)
