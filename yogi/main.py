@@ -29,7 +29,7 @@ def classification_model(model, image_input=None):
     pose, pose_proba = pred(model, preprocessed_image)
 
     if pose_proba < POSE_PROBA_THRESHOLD:
-        pose = "Detecting Pose ..."
+        pose = "No pose detected"
 
     return pose
 
