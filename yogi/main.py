@@ -61,6 +61,8 @@ def pose_detection_model(image, prediction):
 
     height = image.shape[0]
     width = image.shape[1]
+
+
     keypoints_xy, edges_xy, edge_colors = angle_calc._keypoints_and_edges_for_display_red(keypoints_with_scores,
                                                     RED_EDGES,
                                                     height=height,
