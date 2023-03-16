@@ -87,22 +87,22 @@ def _keypoints_and_edges_for_display(keypoints_with_scores,
                                      height,
                                      width,
                                      keypoint_threshold=0.11):
-  """Returns high confidence keypoints and edges for visualization.
+    """Returns high confidence keypoints and edges for visualization.
 
-  Args:
-    keypoints_with_scores: A numpy array with shape [1, 1, 17, 3] representing
-      the keypoint coordinates and scores returned from the MoveNet model.
-    height: height of the image in pixels.
-    width: width of the image in pixels.
-    keypoint_threshold: minimum confidence score for a keypoint to be
-      visualized.
+    Args:
+        keypoints_with_scores: A numpy array with shape [1, 1, 17, 3] representing
+        the keypoint coordinates and scores returned from the MoveNet model.
+        height: height of the image in pixels.
+        width: width of the image in pixels.
+        keypoint_threshold: minimum confidence score for a keypoint to be
+        visualized.
 
-  Returns:
-    A (keypoints_xy, edges_xy, edge_colors) containing:
-      * the coordinates of all keypoints of all detected entities;
-      * the coordinates of all skeleton edges of all detected entities;
-      * the colors in which the edges should be plotted.
-  """
+    Returns:
+        A (keypoints_xy, edges_xy, edge_colors) containing:
+        * the coordinates of all keypoints of all detected entities;
+        * the coordinates of all skeleton edges of all detected entities;
+        * the colors in which the edges should be plotted.
+    """
     keypoints_all = []
     keypoint_edges_all = []
     edge_colors = []
@@ -118,15 +118,15 @@ def _keypoints_and_edges_for_display(keypoints_with_scores,
         keypoints_all.append(kpts_above_thresh_absolute)
 
         for edge_pair, color in KEYPOINT_EDGE_INDS_TO_COLOR.items():
-        if (kpts_scores[edge_pair[0]] > keypoint_threshold and
+            if (kpts_scores[edge_pair[0]] > keypoint_threshold and
             kpts_scores[edge_pair[1]] > keypoint_threshold):
-            x_start = kpts_absolute_xy[edge_pair[0], 0]
-            y_start = kpts_absolute_xy[edge_pair[0], 1]
-            x_end = kpts_absolute_xy[edge_pair[1], 0]
-            y_end = kpts_absolute_xy[edge_pair[1], 1]
-            line_seg = np.array([[x_start, y_start], [x_end, y_end]])
-            keypoint_edges_all.append(line_seg)
-            edge_colors.append(color)
+                x_start = kpts_absolute_xy[edge_pair[0], 0]
+                y_start = kpts_absolute_xy[edge_pair[0], 1]
+                x_end = kpts_absolute_xy[edge_pair[1], 0]
+                y_end = kpts_absolute_xy[edge_pair[1], 1]
+                line_seg = np.array([[x_start, y_start], [x_end, y_end]])
+                keypoint_edges_all.append(line_seg)
+                edge_colors.append(color)
     if keypoints_all:
         keypoints_xy = np.concatenate(keypoints_all, axis=0)
     else:
@@ -237,7 +237,7 @@ def calculate_angle(a,b,c):
 
 
 def angle_calc(image):  #(image_capture)
-
+    input_size = 192
     # Resize and pad the image to keep the aspect ratio and fit the expected size.
     input_image = tf.expand_dims(image, axis=0)
     input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
@@ -429,9 +429,11 @@ def render_red(dict3, KEYPOINT_EDGE_INDS_TO_COLOR):
     return RED_EDGES
 
 def _keypoints_and_edges_for_display_red(keypoints_with_scores,
+                                        RED_EDGES,
                                         height,
                                         width,
                                         keypoint_threshold=0.11):
+
     """Returns high confidence keypoints and edges for visualization.
 
     Args:
@@ -462,7 +464,7 @@ def _keypoints_and_edges_for_display_red(keypoints_with_scores,
             kpts_scores > keypoint_threshold, :]
         keypoints_all.append(kpts_above_thresh_absolute)
 
-        for edge_pair, color in RED_EDGES.items():
+    for edge_pair, color in RED_EDGES.items():
         if (kpts_scores[edge_pair[0]] > keypoint_threshold and
             kpts_scores[edge_pair[1]] > keypoint_threshold):
             x_start = kpts_absolute_xy[edge_pair[0], 0]
@@ -557,6 +559,7 @@ def draw_prediction_on_image_red(
 
 def plot_red(image):
     image = tf.image.decode_jpeg(image)
+    input_size = 192
 
     input_image = tf.expand_dims(image, axis=0)
     input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
@@ -571,6 +574,7 @@ def plot_red(image):
     output_overlay = draw_prediction_on_image_red(
         np.squeeze(display_image.numpy(), axis=0), keypoints_with_scores)
 
-    plt.figure(figsize=(5, 5))
-    plt.imshow(output_overlay)
-    _ = plt.axis('off')
+    # plt.figure(figsize=(5, 5))
+    # plt.imshow(output_overlay)
+    # _ = plt.axis('off')
+    return output_overlay
