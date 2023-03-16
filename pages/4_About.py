@@ -58,6 +58,7 @@ page_bg_img =  """
         box-shadow: 3px 3px #afdcf1;
         border-radius: 4px;
         margin: 2%;
+        opacity: 0.9
     }
 
     [data-testid="stText"] {
