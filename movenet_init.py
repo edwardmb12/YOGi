@@ -13,15 +13,11 @@ from IPython.display import HTML, display
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-import streamlit as st
 
-@st.cache_resource
-def get_interpreter():
-    model_path = "saved_models/lite-model_movenet_singlepose_lightning_tflite_float16_4.tflite"
-    # Initialize the TFLite interpreter
-    interpreter = lite.Interpreter(model_path=model_path)
-    interpreter.allocate_tensors()
-    return interpreter
+model_path = "saved_models/lite-model_movenet_singlepose_lightning_tflite_float16_4.tflite"
+  # Initialize the TFLite interpreter
+interpreter = lite.Interpreter(model_path=model_path)
+interpreter.allocate_tensors()
 
 def movenet(input_image):
     """Runs detection on an input image.
@@ -36,7 +32,6 @@ def movenet(input_image):
       coordinates and scores.
     """
     # TF Lite format expects tensor type of uint8.
-    interpreter = get_interpreter()
     input_image = cast(input_image, dtype=uint8)#tensorflow.uint8)
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()

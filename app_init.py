@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import av
 import streamlit as st
-from helper_functions_init import run_inference, draw_prediction_on_image, determine_crop_region, KEYPOINT_DICT, KEYPOINT_EDGE_INDS_TO_COLOR, init_crop_region
-from movenet_init import movenet
+from helper_functions import run_inference, draw_prediction_on_image, determine_crop_region, KEYPOINT_DICT, KEYPOINT_EDGE_INDS_TO_COLOR, init_crop_region
+from movenet import movenet
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 
 input_size = 192
@@ -18,17 +18,13 @@ class VideoProcessor:
     def __init__(self) -> None:
         self.count = 0
         self.crop_region = init_crop_region(300, 300)
-        self.keypoints_with_scores = None
 
     def process(self, image):
         image_height, image_width, _ = image.shape
-        if self.count % 2 == 0:
-            self.keypoints_with_scores = run_inference(movenet, image, self.crop_region,crop_size=[192, 192])
-        output_image = draw_prediction_on_image(image.astype(np.int32), self.keypoints_with_scores,
+        keypoints_with_scores = run_inference(movenet, image, self.crop_region,crop_size=[192, 192])
+        output_image = draw_prediction_on_image(image.astype(np.int32), keypoints_with_scores,
                             crop_region=None, close_figure=True, output_image_height=300)
-        #if self.count %  == 0:
-        #    self.crop_region = determine_crop_region(self.keypoints_with_scores, image_height, image_width)
-        self.count += 1
+        self.crop_region = determine_crop_region(keypoints_with_scores, image_height, image_width)
         return output_image
 
     def recv(self, frame):
