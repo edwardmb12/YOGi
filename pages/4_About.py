@@ -57,6 +57,7 @@ page_bg_img =  """
         background:#E6F3FB;
         box-shadow: 3px 3px #afdcf1;
         border-radius: 4px;
+        margin: 2%;
     }
 
     [data-testid="stText"] {
@@ -73,22 +74,14 @@ page_bg_img =  """
 """
 
 st.markdown(page_bg_img, unsafe_allow_html=True)
+st.metric(label="", value="About")
 
-photo = """
-            <style type="text/css">
-            div[data-testid="stHorizontalBlock"] {
-                border:20px;
-                padding:40px;
-                border-radius: 10px;
-                background:#FFFFFF;
-            } <img src="images/team_yogi.jpg">
-            </style>
-        """
+slide_1 = Image.open(f'slides/Slide1.JPG')
+slide_2 = Image.open(f'slides/Slide2.JPG')
+slide_4 = Image.open(f'slides/Slide4.JPG')
+slide_7 = Image.open(f'slides/Slide7.JPG')
 
-
-st.metric(label="", value="Meet the Team")
-
-image = Image.open('images/team_yogi.jpg')
-st.image(image, caption='Team Yogi')
-
-st.text("Dolly, Ted, Victoria and Melvin")
+st.image(image=slide_1)
+st.image(image=slide_2)
+st.image(image=slide_4)
+st.image(image=slide_7)
