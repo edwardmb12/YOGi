@@ -428,7 +428,7 @@ def render_red(dict3, KEYPOINT_EDGE_INDS_TO_COLOR):
     RED_EDGES = KEYPOINT_EDGE_INDS_TO_COLOR.copy()
 
     for k, v in dict3.items():
-        if v >= 10:
+        if v >= 7:
             points_to_color = bars_dictionary[k]
             for point in points_to_color:
                 RED_EDGES[point] = 'r'
