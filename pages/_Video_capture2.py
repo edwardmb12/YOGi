@@ -2,16 +2,18 @@ import streamlit as st
 import cv2
 import numpy as np
 import av
-import mediapipe as mp
-from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
-from streamlit_webrtc import (
-VideoTransformerBase,
-webrtc_streamer,
-VideoHTMLAttributes)
-from video import extract_and_plot
-import threading
-#need to import position detection and feed in an image
 
+from helper_functions import run_inference, draw_prediction_on_image, determine_crop_region, KEYPOINT_DICT, KEYPOINT_EDGE_INDS_TO_COLOR, init_crop_region
+from movenet import movenet
+
+from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
+#from streamlit_webrtc import (
+#VideoTransformerBase,
+#webrtc_streamer,
+#VideoHTMLAttributes)
+#import threading
+#need to import position detection and feed in an image
+#import mediapipe as mp
 
 page_bg_img =  """
     <style>
@@ -69,6 +71,42 @@ MuiBox-root css-0
 
 st.metric(label="", value="Video Capture")
 st.markdown(page_bg_img, unsafe_allow_html=True)
+input_size = 192
+RTC_CONFIGURATION = RTCConfiguration(
+    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
+
+class VideoProcessor:
+    def __init__(self) -> None:
+        self.count = 0
+        self.crop_region = init_crop_region(300, 300)
+        self.keypoints_with_scores = {}
+
+    def process(self, image):
+        image_height, image_width, _ = image.shape
+        if self.count % 2 == 0:
+            self.keypoints_with_scores = run_inference(movenet, image, self.crop_region,crop_size=[192, 192])
+        output_image = draw_prediction_on_image(image.astype(np.int32), self.keypoints_with_scores,
+                            crop_region=None, close_figure=True, output_image_height=300)
+        #if self.count %  == 0:
+        #    self.crop_region = determine_crop_region(self.keypoints_with_scores, image_height, image_width)
+        self.count += 1
+        return output_image
+
+    def recv(self, frame):
+        img = frame.to_ndarray(format="bgr24")
+        img = self.process(img).astype(np.uint8)
+
+        return av.VideoFrame.from_ndarray(img, format="bgr24")
+
+
+
+webrtc_ctx = webrtc_streamer(
+    key="WYH",
+    mode=WebRtcMode.SENDRECV,
+    rtc_configuration=RTC_CONFIGURATION,
+    media_stream_constraints={"video": True, "audio": False},
+    video_processor_factory=VideoProcessor,
+    async_processing=True)
 
 # def main():
 #     class VideoTransformer(VideoTransformerBase):
@@ -106,62 +144,62 @@ st.markdown(page_bg_img, unsafe_allow_html=True)
 
 
 #Defining the variables
-lock = threading.Lock()
-img_container = {"frames":[]}
+#lock = threading.Lock()
+#img_container = {"frames":[]}
 
 
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
-mpPose = mp.solutions.pose
-pose = mpPose.Pose()
-points = mpPose.PoseLandmark#(
+#mp_drawing = mp.solutions.drawing_utils
+#mp_drawing_styles = mp.solutions.drawing_styles
+#mpPose = mp.solutions.pose
+#pose = mpPose.Pose()
+#points = mpPose.PoseLandmark#(
     #model_complexity=0,
     #min_detection_confidence=0.5,
     #min_tracking_confidence=0.5)
 
 
 
-def process(image):
-    image.flags.writeable = False
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    results = pose.process(image)
+#def process(image):
+    #image.flags.writeable = False
+    #image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    #results = pose.process(image)
 # Draw the hand annotations on the image.
-    image.flags.writeable = True
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    if results.pose_landmarks:
-        mp_drawing.draw_landmarks(image, results.pose_landmarks, mpPose.POSE_CONNECTIONS
+    #image.flags.writeable = True
+    #image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    #if results.pose_landmarks:
+        #mp_drawing.draw_landmarks(image, results.pose_landmarks, mpPose.POSE_CONNECTIONS
             #, mp_drawing_styles.get_default_hand_landmarks_style(),
             #mp_drawing_styles.get_default_hand_connections_style()
-            )
-        landmarks = results.pose_landmarks.landmark
-    return cv2.flip(image, 1)
-RTC_CONFIGURATION = RTCConfiguration(
-    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-)
+            #)
+        #landmarks = results.pose_landmarks.landmark
+    #return cv2.flip(image, 1)
+#RTC_CONFIGURATION = RTCConfiguration(
+    #{"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+#)
 
 
 
-class VideoProcessor():
-    def recv(self, frame):
-        img = frame.to_ndarray(format="bgr24")
-        img = process(img)
-        return av.VideoFrame.from_ndarray(img, format="bgr24")
-webrtc_ctx = webrtc_streamer(
-    key="WYH",
-    mode=WebRtcMode.SENDRECV,
-    rtc_configuration=RTC_CONFIGURATION,
-    media_stream_constraints={"video": True, "audio": False},
-    video_processor_factory=VideoProcessor,
-    async_processing=True)
+# class VideoProcessor():
+#     def recv(self, frame):
+#         img = frame.to_ndarray(format="bgr24")
+#         img = process(img)
+#         return av.VideoFrame.from_ndarray(img, format="bgr24")
+# webrtc_ctx = webrtc_streamer(
+#     key="WYH",
+#     mode=WebRtcMode.SENDRECV,
+#     rtc_configuration=RTC_CONFIGURATION,
+#     media_stream_constraints={"video": True, "audio": False},
+#     video_processor_factory=VideoProcessor,
+#     async_processing=True)
 
-if webrtc_ctx.video_transformer:
-    snap = st.button("Snapshot")
-    if snap:
-        image = webrtc_ctx.video_transformer.out_image
-        st.image(image=image)
+# if webrtc_ctx.video_transformer:
+#     snap = st.button("Snapshot")
+#     if snap:
+#         image = webrtc_ctx.video_transformer.out_image
+#         st.image(image=image)
 
-    else:
-        st.warning("No frames available yet.")
+#     else:
+#         st.warning("No frames available yet.")
 
 
 

@@ -3,6 +3,9 @@ from PIL import Image
 import numpy as np
 import json
 import pandas as pd
+
+img_file_buffer = st.camera_input("Take a picture")
+
 from yogi import load, main
 import numpy as np
 
@@ -105,6 +108,7 @@ model = load.loading_model()
 if img_file_buffer is not None:
     # To read image file buffer as a PIL Image:
     img = Image.open(img_file_buffer)
+
     img.save("image_capture.jpeg")
     #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     # To convert PIL Image to numpy array:
@@ -112,6 +116,7 @@ if img_file_buffer is not None:
 
     # Check the type of img_array:
     # Should output: <class 'numpy.ndarray'>
+
     # st.write(type(img_array))
 
     # Check the shape of img_array:
