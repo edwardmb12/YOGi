@@ -2,7 +2,6 @@ import streamlit as st
 import base64    #pip install pybase64
 import streamlit.components.v1 as components
 from PIL import Image
-from functions import add_bg_from_local
 import os
 
 st.set_page_config(layout="wide")
