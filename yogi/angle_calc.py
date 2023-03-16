@@ -58,7 +58,92 @@ KEYPOINT_EDGE_INDS_TO_COLOR = {
     (14, 16): 'g',
 }
 
-def movenet(input_image):
+Downward_Facing_Dog_pose_or_Adho_Mukha_Svanasana_m = {
+    "left_elbow_a": 1,
+    "right_elbow_a": 1,
+    "left_shoulder_b": 0,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 0,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 0,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 0,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+Tree_Pose_or_Vrksasana_m = {
+    "left_elbow_a": 0,
+    "right_elbow_a": 0,
+    "left_shoulder_b": 0,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 0,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 0,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 0,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+Warrior_I_Pose_or_Virabhadrasana_I_m = {
+    "left_elbow_a": 1,
+    "right_elbow_a": 1,
+    "left_shoulder_b": 1,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 1,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 0,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 0,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+Warrior_II_Pose_or_Virabhadrasana_II_m = {
+    "left_elbow_a": 1,
+    "right_elbow_a": 1,
+    "left_shoulder_b": 1,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 1,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 1,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 1,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+Warrior_III_Pose_or_Virabhadrasana_III_m = {
+    "left_elbow_a": 1,
+    "right_elbow_a": 1,
+    "left_shoulder_b": 1,
+    "left_shoulder_a": 0,
+    "right_shoulder_b": 1,
+    "right_shoulder_a": 0,
+    "left_hip_a": 0,
+    "left_hip_b": 1,
+    "left_hip_c": 0,
+    "right_hip_a": 0,
+    "right_hip_b": 1,
+    "right_hip_c": 0,
+    "left_knee_a": 1,
+    "right_knee_a": 1,
+}
+
+def movenet(image):
     """Runs detection on an input image.
 
     Args:
@@ -236,19 +321,19 @@ def calculate_angle(a,b,c):
     return angle
 
 
-def angle_calc(image):  #(image_capture)
-    input_size = 192
+def angle_calc(image, keypoints_with_scores):  #(image_capture)
+    # input_size = 192
     # Resize and pad the image to keep the aspect ratio and fit the expected size.
-    input_image = tf.expand_dims(image, axis=0)
-    input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
+    # input_image = tf.expand_dims(image, axis=0)
+    # input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
 
     # Run model inference.
-    keypoints_with_scores = movenet(input_image)
+    # keypoints_with_scores = movenet(input_image)
 
     # Visualize the predictions with image.
     display_image = tf.expand_dims(image, axis=0)
     display_image = tf.cast(tf.image.resize_with_pad(
-        display_image, 1280, 1280), dtype=tf.int32)
+    display_image, 1280, 1280), dtype=tf.int32)
     output_overlay = draw_prediction_on_image(
         np.squeeze(display_image.numpy(), axis=0), keypoints_with_scores)
 
@@ -289,92 +374,7 @@ def angle_calc(image):  #(image_capture)
 
 
 #get angles comparrison
-def compare_angles(image, pose):
-
-    Downward_Facing_Dog_pose_or_Adho_Mukha_Svanasana_m = {
-        "left_elbow_a": 1,
-        "right_elbow_a": 1,
-        "left_shoulder_b": 0,
-        "left_shoulder_a": 0,
-        "right_shoulder_b": 0,
-        "right_shoulder_a": 0,
-        "left_hip_a": 0,
-        "left_hip_b": 0,
-        "left_hip_c": 0,
-        "right_hip_a": 0,
-        "right_hip_b": 0,
-        "right_hip_c": 0,
-        "left_knee_a": 1,
-        "right_knee_a": 1,
-    }
-
-    Tree_Pose_or_Vrksasana_m = {
-        "left_elbow_a": 0,
-        "right_elbow_a": 0,
-        "left_shoulder_b": 0,
-        "left_shoulder_a": 0,
-        "right_shoulder_b": 0,
-        "right_shoulder_a": 0,
-        "left_hip_a": 0,
-        "left_hip_b": 0,
-        "left_hip_c": 0,
-        "right_hip_a": 0,
-        "right_hip_b": 0,
-        "right_hip_c": 0,
-        "left_knee_a": 1,
-        "right_knee_a": 1,
-    }
-
-    Warrior_I_Pose_or_Virabhadrasana_I_m = {
-        "left_elbow_a": 1,
-        "right_elbow_a": 1,
-        "left_shoulder_b": 1,
-        "left_shoulder_a": 0,
-        "right_shoulder_b": 1,
-        "right_shoulder_a": 0,
-        "left_hip_a": 0,
-        "left_hip_b": 0,
-        "left_hip_c": 0,
-        "right_hip_a": 0,
-        "right_hip_b": 0,
-        "right_hip_c": 0,
-        "left_knee_a": 1,
-        "right_knee_a": 1,
-    }
-
-    Warrior_II_Pose_or_Virabhadrasana_II_m = {
-        "left_elbow_a": 1,
-        "right_elbow_a": 1,
-        "left_shoulder_b": 1,
-        "left_shoulder_a": 0,
-        "right_shoulder_b": 1,
-        "right_shoulder_a": 0,
-        "left_hip_a": 0,
-        "left_hip_b": 1,
-        "left_hip_c": 0,
-        "right_hip_a": 0,
-        "right_hip_b": 1,
-        "right_hip_c": 0,
-        "left_knee_a": 1,
-        "right_knee_a": 1,
-    }
-
-    Warrior_III_Pose_or_Virabhadrasana_III_m = {
-        "left_elbow_a": 1,
-        "right_elbow_a": 1,
-        "left_shoulder_b": 1,
-        "left_shoulder_a": 0,
-        "right_shoulder_b": 1,
-        "right_shoulder_a": 0,
-        "left_hip_a": 0,
-        "left_hip_b": 1,
-        "left_hip_c": 0,
-        "right_hip_a": 0,
-        "right_hip_b": 1,
-        "right_hip_c": 0,
-        "left_knee_a": 1,
-        "right_knee_a": 1,
-    }
+def compare_angles(pose, angles):
 
     # Opening JSON file
     with open('data.json') as json_file:
@@ -388,7 +388,7 @@ def compare_angles(image, pose):
 
     image = tf.image.decode_jpeg(image)
     dict1 = ground_pose_dict[pose]
-    dict2 = angle_calc(image)
+    dict2 = angles
     dict3 = {}
 
     x = str(pose + 'm')
@@ -400,7 +400,10 @@ def compare_angles(image, pose):
     return dict3
 
 def render_red(dict3, KEYPOINT_EDGE_INDS_TO_COLOR):
-
+    '''
+    Takes the dict of differences in angles and looks for an angle difference more than 10 degrees,
+    then changes the colours of the corresponding bars around the angle to red.
+    '''
     bars_dictionary = {
         "left_elbow_a": [(5,7),(7,9)],
         "right_elbow_a": [(6,8),(8,10)],
@@ -421,7 +424,7 @@ def render_red(dict3, KEYPOINT_EDGE_INDS_TO_COLOR):
     RED_EDGES = KEYPOINT_EDGE_INDS_TO_COLOR.copy()
 
     for k, v in dict3.items():
-        if v >= 15:
+        if v >= 10:
             points_to_color = bars_dictionary[k]
             for point in points_to_color:
                 RED_EDGES[point] = 'r'
@@ -557,12 +560,7 @@ def draw_prediction_on_image_red(
             interpolation=cv2.INTER_CUBIC)
     return image_from_plot
 
-def plot_red(image):
-    image = tf.image.decode_jpeg(image)
-    input_size = 192
-
-    input_image = tf.expand_dims(image, axis=0)
-    input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
+def plot_red(input_image,image):
 
     # Run model inference.
     keypoints_with_scores = movenet(input_image)

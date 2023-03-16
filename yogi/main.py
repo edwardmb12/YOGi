@@ -8,6 +8,7 @@ from yogi.params import POSE_PROBA_THRESHOLD
 import json
 import numpy as np
 from yogi import angle_calc
+import tensorflow as tf
 
 # 1) IMAGE CAPTURE
 # Opening JSON file from webcam capture and giving rgb array in form (398, 704, 3)
@@ -38,13 +39,30 @@ def classification_model(model, image_input=None):
 def pose_detection_model(image, prediction):
     KEYPOINT_DICT = angle_calc.KEYPOINT_DICT
     KEYPOINT_EDGE_INDS_TO_COLOR = angle_calc.KEYPOINT_EDGE_INDS_TO_COLOR
-    keypoints_with_scores = angle_calc.movenet(image)
-    height = image[0]
-    width = image[1]
+
+    Downward_Facing_Dog_pose_or_Adho_Mukha_Svanasana_m = angle_calc.Downward_Facing_Dog_pose_or_Adho_Mukha_Svanasana_m
+    Tree_Pose_or_Vrksasana_m = angle_calc.Tree_Pose_or_Vrksasana_m
+    Warrior_I_Pose_or_Virabhadrasana_I_m =  angle_calc.Warrior_I_Pose_or_Virabhadrasana_I_m
+    Warrior_II_Pose_or_Virabhadrasana_II_m = angle_calc.Warrior_II_Pose_or_Virabhadrasana_II_m
+    Warrior_III_Pose_or_Virabhadrasana_III_m = angle_calc.Warrior_III_Pose_or_Virabhadrasana_III_m
+    input_size = 192
+
+    decode_image = tf.image.decode_jpeg(image)
+    input_image = tf.expand_dims(decode_image, axis=0)
+    input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
+
+    keypoints_with_scores = angle_calc.movenet(input_image)
+    angles = angle_calc.angle_calc(image, keypoints_with_scores)
+
 
     # angles = angle_calc.angle_calc(image)
-    dict3 = angle_calc.compare_angles(image, prediction)
+    dict3 = angle_calc.compare_angles(prediction, angles)
+
     RED_EDGES = angle_calc.render_red(dict3, KEYPOINT_EDGE_INDS_TO_COLOR)
+
+    height = image.shape[0]
+    width = image.shape[1]
+
     keypoints_xy, edges_xy, edge_colors = angle_calc._key_points_and_edges_for_display_red(keypoints_with_scores,
                                                      height=height,
                                                      width=width,
@@ -52,7 +70,6 @@ def pose_detection_model(image, prediction):
 
     image_from_plot = angle_calc.draw_prediction_on_image_red(image,
                                  keypoints_with_scores,
-
                                  crop_region=None,
                                  close_figure=False,
                                  output_image_height=None)
