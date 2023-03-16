@@ -59,6 +59,9 @@ def pose_detection_model(image, prediction):
 
     RED_EDGES = angle_calc.render_red(dict3, KEYPOINT_EDGE_INDS_TO_COLOR)
 
+    height = image.shape[0]
+    width = image.shape[1]
+
     keypoints_xy, edges_xy, edge_colors = angle_calc._keypoints_and_edges_for_display_red(keypoints_with_scores,
                                                     RED_EDGES,
                                                     height=height,
