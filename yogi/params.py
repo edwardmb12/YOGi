@@ -1,7 +1,7 @@
 
 ##################  VARIABLES  ##################
 
-POSE_PROBA_THRESHOLD = 0.6
+POSE_PROBA_THRESHOLD = 0.8
 
 
 ##################  CONSTANTS  #####################

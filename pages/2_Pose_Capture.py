@@ -65,6 +65,7 @@ page_bg_img =  """
         border-radius: 4px;
         opacity: 0.8;
         text-align: center;
+        font-size: 30px
     }
 
         [data-testid="stImage"] {
@@ -83,13 +84,15 @@ page_bg_img =  """
         margin: 3%
     }
 
+
+
 MuiBox-root css-0
     </style>
 
 """
 
 st.markdown(page_bg_img, unsafe_allow_html=True)
-st.metric(label="", value="Picture Capture")
+st.text("Picture Capture")
 
 col1, col2 = st.columns(2)
 
