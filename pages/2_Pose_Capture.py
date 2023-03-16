@@ -5,6 +5,9 @@ import json
 import pandas as pd
 from yogi import load, main
 import numpy as np
+import tensorflow as tf
+
+from yogi import posedetect
 
 st.set_page_config(layout="wide")
 
@@ -91,6 +94,29 @@ MuiBox-root css-0
 
 """
 
+# Maps bones to a matplotlib color name.
+KEYPOINT_EDGE_INDS_TO_COLOR = {
+    (0, 1): 'g',
+    (0, 2): 'g',
+    (1, 3): 'g',
+    (2, 4): 'g',
+    (0, 5): 'g',
+    (0, 6): 'g',
+    (5, 7): 'g',
+    (7, 9): 'g',
+    (6, 8): 'g',
+    (8, 10): 'g',
+    (5, 6): 'g',
+    (5, 11): 'g',
+    (6, 12): 'g',
+    (11, 12): 'g',
+    (11, 13): 'g',
+    (13, 15): 'g',
+    (12, 14): 'g',
+    (14, 16): 'g',
+}
+
+
 st.markdown(page_bg_img, unsafe_allow_html=True)
 st.text("Picture Capture")
 
@@ -114,30 +140,6 @@ if img_file_buffer is not None:
     # To convert PIL Image to numpy array:
     img_array = np.array(img)
 
-    # Check the type of img_array:
-    # Should output: <class 'numpy.ndarray'>
-
-    # st.write(type(img_array))
-
-    # Check the shape of img_array:
-    # Should output shape: (height, width, channels)
-    # st.write(img_array.shape)
-    # st.write(img_array)
-
-    # # save the numpy array to a JSON file
-    # with open('img_array.json', 'w') as outfile:
-    #     json.dump(img_array.tolist(), outfile)
-
-    # # load the numpy array from the JSON file and reshape it to its original form
-    # with open('img_array.json', 'r') as infile:
-    #     img_array_from_json = np.array(json.load(infile))
-
-    # # check that the loaded numpy array has the same shape as the original array
-    # assert img_array_from_json.shape == img_array.shape
-
-    # # check that the loaded numpy array has the same values as the original array
-    # assert np.array_equal(img_array_from_json, img_array)
-
 
 
 
@@ -152,8 +154,51 @@ try:
 except:
     print('error with showing gt')
 
+
+
+### Pose Detection
 try:
-    image = main.pose_detection_model(img, prediction)
-    col2.image(image)
-except:
-    print('error with movenet')
+    input_image = tf.expand_dims(img_array, axis=0)
+    input_size = 192
+    input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
+
+    print('getting keypoints')
+    keypoints_with_scores = posedetect.movenet(input_image)
+
+    print('calculating angles')
+    angles = posedetect.angle_calc(keypoints_with_scores)
+
+    print('comparing angles')
+    dict3 = posedetect.compare_angles(prediction, angles)
+
+    print('red edges')
+    red_edges = posedetect.render_red(dict3, KEYPOINT_EDGE_INDS_TO_COLOR)
+
+
+    height = input_image.shape[0]
+    width = input_image.shape[1]
+
+    print('keypoints_and_edges_for_display_red')
+    keypoints_xy, edges_xy, edge_colors = posedetect._keypoints_and_edges_for_display_red(keypoints_with_scores,
+                                                                            red_edges,
+                                                    height=height,
+                                                    width=width,
+                                                    keypoint_threshold=0.11)
+
+
+    print('image_from_plot')
+    image_from_plot = posedetect.draw_prediction_on_image_red(img_array,
+                                keypoints_with_scores,
+                                red_edges,
+                                crop_region=None,
+                                close_figure=False,
+                                output_image_height=None)
+
+    print('getting output overlay')
+    output_overlay = posedetect.plot_red(keypoints_with_scores, img_array, red_edges)
+
+
+
+    st.image(output_overlay)
+except Exception as e:
+    print(e)
