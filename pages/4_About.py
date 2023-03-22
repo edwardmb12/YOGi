@@ -77,10 +77,10 @@ page_bg_img =  """
 st.markdown(page_bg_img, unsafe_allow_html=True)
 st.metric(label="", value="About")
 
-slide_1 = Image.open(f'slides/Slide1.JPG')
-slide_2 = Image.open(f'slides/Slide2.JPG')
-slide_4 = Image.open(f'slides/Slide4.JPG')
-slide_7 = Image.open(f'slides/Slide7.JPG')
+slide_1 = Image.open(f'assets/slides/Slide1.JPG')
+slide_2 = Image.open(f'assets/slides/Slide2.JPG')
+slide_4 = Image.open(f'assets/slides/Slide4.JPG')
+slide_7 = Image.open(f'assets/slides/Slide7.JPG')
 
 st.image(image=slide_1)
 st.image(image=slide_2)

@@ -98,5 +98,5 @@ pose = st.text_input("What pose would you like to see?", value="Downward Dog")
 # col1.image(image1, caption=pose)
 # col2.image(image2, caption=pose)
 
-image = Image.open(f'pose_search/poses/{pose}.jpeg')
+image = Image.open(f'assets/pose_search/poses/{pose}.jpeg')
 st.image(image=image, caption=pose)
