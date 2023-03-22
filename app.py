@@ -113,8 +113,8 @@ st.metric(label="", value="YOGi")
 
 col1, col2 = st.columns(2)
 
-col1.image("images/about4.jpeg")
-col2.image("images/about.jpg")
+col1.image("assets/images/about4.jpeg")
+col2.image("assets/images/about.jpg")
 
 st.text("""
         YOGi is for home-practising yogis to use while unassisted.
