@@ -10,6 +10,8 @@ We wanted to create a platform where users could upload images of them doing yog
 ### Demo :thumbsup:
 ![Alt text](assets/images/Demo1.png)
 ![Alt text](assets/images/Demo2.png)
+![Alt text](assets/images/Demo7.png)
+![Alt text](assets/images/Demo8.gif)
 ![Alt text](assets/images/Demo3.png)
 ![Alt text](assets/images/Demo4.png)
 ![Alt text](assets/images/Demo5.png)
